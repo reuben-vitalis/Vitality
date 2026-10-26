@@ -226,3 +226,6 @@ flagged/
 # Windows / macOS system files
 Thumbs.db
 .DS_Store
+# Test outputs
+samples/*
+!samples/.gitkeep
