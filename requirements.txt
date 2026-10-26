@@ -4,7 +4,7 @@ pandas
 numpy
 joblib
 Pillow
-opencv-python-headless
+opencv-python
 PyWavelets
 invisible-watermark
 torch
