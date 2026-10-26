@@ -218,3 +218,11 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Gradio temp files
+flagged/
+.gradio/
+
+# Windows / macOS system files
+Thumbs.db
+.DS_Store
