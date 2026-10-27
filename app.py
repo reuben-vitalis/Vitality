@@ -2,6 +2,7 @@
 
 Run locally:  python app.py   ->  http://127.0.0.1:7860
 """
+import os
 import tempfile
 from pathlib import Path
 
@@ -10,6 +11,12 @@ import gradio as gr
 from detectors import ai_image, spam, watermark
 
 APP_TITLE = "Vitality — Detection System"
+
+if os.getenv("SPACE_ID"):               # on Hugging Face: download/load the AI-image model at startup
+    try:
+        ai_image._classifier()
+    except Exception as exc:
+        print(f"[app] could not preload AI-image model: {exc}")
 
 
 # ---------- helpers ----------

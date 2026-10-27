@@ -63,16 +63,29 @@ def file_evidence(img: Image.Image, raw: bytes | None) -> dict:
 
 
 # ---------- Signal 2: pretrained model ----------
+try:                                    # Hugging Face ZeroGPU: borrow a GPU only while the model runs
+    import spaces
+    _gpu = spaces.GPU(duration=30)
+except ImportError:                     # running locally: no-op decorator
+    def _gpu(fn):
+        return fn
+
+
 @lru_cache(maxsize=1)
 def _classifier():
     from transformers import pipeline   # imported lazily: slow to load
     return pipeline("image-classification", model=MODEL_ID)
 
 
+@_gpu
+def _run_model(img: Image.Image):
+    return _classifier()(img.convert("RGB"))
+
+
 def model_probability(img: Image.Image) -> float | None:
     """Probability (0-1) that the image is AI-generated, or None if the model is unavailable."""
     try:
-        preds = _classifier()(img.convert("RGB"))
+        preds = _run_model(img)
     except Exception as exc:  # e.g. no internet on first run
         print(f"[ai_image] model unavailable: {exc}")
         return None
