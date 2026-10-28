@@ -22,7 +22,7 @@ from detectors.watermark import _check_stable_diffusion, _to_bgr, MIN_PIXELS
 MODEL_ID = "Organika/sdxl-detector"
 AI_WORDS = ["stable diffusion", "midjourney", "dall-e", "dall·e", "dalle", "firefly", "comfyui",
             "automatic1111", "novelai", "leonardo", "ideogram", "flux", "imagen", "sdxl", "openai",
-            "generative fill", "ai generated", "ai-generated", "grok", "kimi", "gemini", "claude", "deepseek"]
+            "generative fill", "ai generated", "ai-generated"]
 PROMPT_KEYS = ["parameters", "prompt", "workflow", "negative_prompt", "sd-metadata", "dream"]
 
 
