@@ -1,6 +1,20 @@
+# Vitality — Detection System
+
+Vitality is a web app that helps people check digital content before they trust it. It has three detectors:
+
+| Detector | What it tells you |
+|---|---|
+| **Watermark** | Whether an image carries an authentic, untampered Vitality watermark (signed with HMAC-SHA256), and whether it carries the hidden watermark Stable Diffusion adds to AI images. It can also add a signed watermark to your own images. |
+| **AI image** | How likely an image is to be AI-generated, combining evidence in the file, a pretrained model and a frequency (FFT) check. |
+| **Spam & Phishing** | Whether a message (SMS, email or chat) is likely spam or phishing, which words triggered the verdict, and which red flags it contains. |
+
+Results are **probabilities, not proof**.
+
+Built by **Reuben Vitalis** as the capstone project of the **Wecncode AI in Cybersecurity Bootcamp** (2026).
+
 ---
+
 title: Vitality
-emoji: 🛡️
 colorFrom: indigo
 colorTo: blue
 sdk: gradio
@@ -9,34 +23,17 @@ python_version: "3.12"
 app_file: app.py
 pinned: false
 short_description: Detect watermarks, AI-generated images, spam and phishing
----
-
-# 🛡️ Vitality — Detection System
-
-Vitality is a web app that helps people check digital content before they trust it. It has three detectors:
-
-| Detector | What it tells you |
-|---|---|
-| 💧 **Watermark** | Whether an image carries an authentic, untampered Vitality watermark (signed with HMAC-SHA256), and whether it carries the hidden watermark Stable Diffusion adds to AI images. It can also add a signed watermark to your own images. |
-| 🤖 **AI image** | How likely an image is to be AI-generated, combining evidence in the file, a pretrained model and a frequency (FFT) check. |
-| 📩 **Spam & Phishing** | Whether a message (SMS, email or chat) is likely spam or phishing, which words triggered the verdict, and which red flags it contains. |
-
-Results are **probabilities, not proof**.
-
-Built by **Reuben Vitalis** as the capstone project of the **Wecncode AI in Cybersecurity Bootcamp** (2026).
-
----
 
 ## How each detector works
 
-### 💧 Watermark (cryptography)
+### Watermark (cryptography)
 1. A 20-byte message is hidden in the image's frequency patterns using a DWT-DCT-SVD transform (`invisible-watermark`). The change is invisible: image quality stays around 36–39 dB PSNR.
 2. The message holds a marker, the date, a 1–3 character owner tag and a **48-bit HMAC-SHA256 signature** made with a secret key, so only the key holder can create valid watermarks.
 3. **Reed–Solomon error correction** (as used in QR codes) repairs bits damaged by compression.
 4. The watermark is embedded at a fixed working size (512 px), so resized copies can still be read.
 5. Verification returns **authentic** (valid signature), **forged** (watermark present but signature invalid) or **none**, plus the file's **SHA-256 fingerprint**.
 
-### 🤖 AI image
+### AI image
 | Signal | Weight |
 |---|---|
 | Evidence in the file: AI-tool names in metadata, Stable Diffusion prompts in PNGs, C2PA content credentials, the Stable Diffusion invisible watermark | If found: 99% AI |
@@ -45,7 +42,7 @@ Built by **Reuben Vitalis** as the capstone project of the **Wecncode AI in Cybe
 
 Missing camera EXIF is deliberately **not** treated as evidence of AI, because messaging apps strip EXIF from real photos.
 
-### 📩 Spam & Phishing
+### Spam & Phishing
 - **Model:** Logistic Regression on TF-IDF word (1–2 words) and character (3–5 letters) features.
 - **Data:** 644 labelled messages (336 spam/phishing, 308 safe) in English, Swahili and Sheng, including M-Pesa-style scams.
 - **Red flags:** rule-based checks for **urgency**, **authority** and **manipulation** phrases.
