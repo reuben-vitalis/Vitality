@@ -186,4 +186,4 @@ with gr.Blocks(title=APP_TITLE) as demo:
         gr.Markdown(ABOUT)
 
 if __name__ == "__main__":
-    demo.launch(theme=gr.themes.Soft())
+    demo.launch(theme="Maani/MonoNeo")
