@@ -1,4 +1,3 @@
----
 # Vitality — Detection System
 
 Vitality is a web app that helps people check digital content before they trust it. It has three detectors:
