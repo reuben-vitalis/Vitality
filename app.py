@@ -169,6 +169,7 @@ with gr.Blocks(title=APP_TITLE) as demo:
             with gr.Column():
                 ai_out = gr.Markdown()
                 ai_spec = gr.Image(label="Frequency spectrum (FFT)", interactive=False)
+                gr.Markdown("*The frequency spectrum shows how the image's detail is spread from coarse patterns (bright centre) to fine textures (edges) and the grid lines away from the centre can be traces of the up-sampling that AI image generators use.*")
         ai_btn.click(check_ai_image, ai_img, [ai_out, ai_spec])
 
     with gr.Tab("📩 Spam & Phishing"):
