@@ -136,9 +136,9 @@ The AI-image model is licensed CC-BY-NC-3.0 (non-commercial, educational use).
 
 # ---------- Layout ----------
 with gr.Blocks(title=APP_TITLE) as demo:
-    gr.Markdown("# 🛡️ Vitality\n### Check images for watermarks and AI generation, and messages for spam and phishing.")
+    gr.Markdown("#Vitality\n### Check images for watermarks and AI generation, and messages for spam and phishing.")
 
-    with gr.Tab("💧 Watermark"):
+    with gr.Tab("Watermark"):
         with gr.Row():
             with gr.Column():
                 gr.Markdown("### Verify an image")
@@ -160,7 +160,7 @@ with gr.Blocks(title=APP_TITLE) as demo:
                 a_file = gr.File(label="Download watermarked PNG")
         a_btn.click(add_watermark, [a_img, a_owner], [a_out, a_preview, a_file])
 
-    with gr.Tab("🤖 AI Image"):
+    with gr.Tab("AI Image"):
         with gr.Row():
             with gr.Column():
                 ai_img = gr.Image(type="filepath", label="Image to check", sources=["upload", "clipboard"])
@@ -172,7 +172,7 @@ with gr.Blocks(title=APP_TITLE) as demo:
                 gr.Markdown("*The frequency spectrum shows how the image's detail is spread from coarse patterns (bright centre) to fine textures (edges) and the grid lines away from the centre can be traces of the up-sampling that AI image generators use.*")
         ai_btn.click(check_ai_image, ai_img, [ai_out, ai_spec])
 
-    with gr.Tab("📩 Spam & Phishing"):
+    with gr.Tab("Spam & Phishing"):
         with gr.Row():
             with gr.Column():
                 s_text = gr.Textbox(label="Paste a message (SMS, email or chat)", lines=6,
@@ -183,7 +183,7 @@ with gr.Blocks(title=APP_TITLE) as demo:
                 s_out = gr.Markdown()
         s_btn.click(check_spam, s_text, s_out)
 
-    with gr.Tab("ℹ️ About"):
+    with gr.Tab("About"):
         gr.Markdown(ABOUT)
 
 if __name__ == "__main__":
