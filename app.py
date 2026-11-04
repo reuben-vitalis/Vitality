@@ -136,7 +136,7 @@ The AI-image model is licensed CC-BY-NC-3.0 (non-commercial, educational use).
 
 # ---------- Layout ----------
 with gr.Blocks(title=APP_TITLE) as demo:
-    gr.Markdown("#Vitality\n### Check images for watermarks and AI generation, and messages for spam and phishing.")
+    gr.Markdown("**Vitality**\n### Check images for watermarks and AI generation, and messages for spam and phishing.")
 
     with gr.Tab("Watermark"):
         with gr.Row():
