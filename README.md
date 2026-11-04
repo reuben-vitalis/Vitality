@@ -16,16 +16,6 @@ Built by **Reuben Vitalis** as the capstone project of the **Wecncode AI in Cybe
 
 ---
 
-title: Vitality
-colorFrom: indigo
-colorTo: blue
-sdk: gradio
-sdk_version: 6.30.0
-python_version: "3.12"
-app_file: app.py
-pinned: false
-short_description: Detect watermarks, AI-generated images, spam and phishing
-
 ## How each detector works
 
 ### Watermark (cryptography)
