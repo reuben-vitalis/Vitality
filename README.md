@@ -2,17 +2,17 @@
 
 Vitality is a web app that helps people check digital content before they trust it. It has three detectors:
 
-| Detector | What it tells you |
-|---|---|
-| **Watermark** | Whether an image carries an authentic, untampered Vitality watermark (signed with HMAC-SHA256), and whether it carries the hidden watermark Stable Diffusion adds to AI images. It can also add a signed watermark to your own images. |
-| **AI image** | How likely an image is to be AI-generated, combining evidence in the file, a pretrained model and a frequency (FFT) check. |
-| **Spam & Phishing** | Whether a message (SMS, email or chat) is likely spam or phishing, which words triggered the verdict, and which red flags it contains. |
+**Watermark** : Whether an image carries an authentic, untampered Vitality watermark (signed with HMAC-SHA256), and whether it carries the hidden watermark Stable Diffusion adds to AI images. It can also add a signed watermark to your own images.
+**AI image** : How likely an image is to be AI-generated, combining evidence in the file, a pretrained model and a frequency (FFT) check.
+**Spam & Phishing** : Whether a message (SMS, email or chat) is likely spam or phishing, which words triggered the verdict, and which red flags it contains.
+
+**Need a demo guide or test??** CHECK : https://huggingface.co/spaces/R1532/Vitality
 
 Results are **probabilities, not proof**.
 
 Built by **Reuben Vitalis** as the capstone project of the **Wecncode AI in Cybersecurity Bootcamp** (2026).
 
-![Vitality](./assets/images/dashboard.png)
+![Vitality](/assets/images/dashboard.png)
 
 ---
 
