@@ -12,7 +12,7 @@ Results are **probabilities, not proof**.
 
 Built by **Reuben Vitalis** as the capstone project of the **Wecncode AI in Cybersecurity Bootcamp** (2026).
 
-![Vitality](/assets/images/dashboard.png)
+![Vitality](/assets/images/Dashboard.png)
 
 ---
 
@@ -25,7 +25,7 @@ Built by **Reuben Vitalis** as the capstone project of the **Wecncode AI in Cybe
 4. The watermark is embedded at a fixed working size (512 px), so resized copies can still be read.
 5. Verification returns **authentic** (valid signature), **forged** (watermark present but signature invalid) or **none**, plus the file's **SHA-256 fingerprint**.
 
-![Vitality](./assets/images/watermark.png)
+![Vitality](./assets/images/Watermark.png)
 
 ### AI image
 | Signal | Weight |
@@ -36,16 +36,16 @@ Built by **Reuben Vitalis** as the capstone project of the **Wecncode AI in Cybe
 
 Missing camera EXIF is deliberately **not** treated as evidence of AI, because messaging apps strip EXIF from real photos.
 
-![Vitality](./assets/images/AI_image.png)
+![Vitality](./assets/images/AI_Image.png)
 
 ### Spam & Phishing
 - **Model:** Logistic Regression on TF-IDF word (1–2 words) and character (3–5 letters) features.
 - **Data:** 644 labelled messages (336 spam/phishing, 308 safe) in English, Swahili and Sheng, including M-Pesa-style scams.
 - **Red flags:** rule-based checks for **urgency**, **authority** and **manipulation** phrases.
 
-![Vitality](./assets/images/phishing_mail.png)
+![Vitality](./assets/images/Phishing_mail.png)
 
-![Vitality](./assets/images/safe_mail.png)
+![Vitality](./assets/images/Safe_mail.png)
 
 ---
 
