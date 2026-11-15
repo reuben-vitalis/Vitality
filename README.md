@@ -47,6 +47,31 @@ Missing camera EXIF is deliberately **not** treated as evidence of AI, because m
 
 ![Vitality](./assets/images/Safe_mail.png)
 
+## Algorithms used
+
+### Spam & Phishing detector — TF-IDF + Logistic Regression
+1. **Text cleaning:** the message is lower-cased so "WIN" and "win" count as the same word.
+2. **TF-IDF features:** the text is turned into numbers with *Term Frequency–Inverse Document Frequency*. A word or phrase scores high when it appears often in this message but rarely across all messages, so words like "the" score low and words like "congratulations" or "PIN" score high. Two views are combined:
+   - **word features** – single words and two-word phrases (e.g. "send money", "account suspended");
+   - **character features** – 3–5 letter fragments, which catch misspellings and tricks such as "fr33" or "M-PESA" written in different ways, and work across English, Swahili and Sheng.
+3. **Logistic Regression:** each feature has a learned weight. The weighted sum is passed through the sigmoid function, which turns it into a probability between 0 and 1 that the message is spam or phishing. The model uses regularisation (C = 5) so it does not over-fit the 644 training messages.
+4. **Explanation:** the words with the largest weight × TF-IDF values are shown as the words that triggered the verdict.
+5. **Red flags:** a separate rule-based check looks for phrases of urgency ("act now"), authority ("Safaricom", "KRA") and manipulation ("you have won").
+
+Logistic Regression was chosen after comparing eight algorithms; it had the best 5-fold cross-validation accuracy (92.4%), is fast, and its weights can be explained.
+
+### Watermark detector — DWT-DCT-SVD, HMAC-SHA256, Reed–Solomon, SHA-256
+- **DWT-DCT-SVD embedding:** the image is split into frequency bands with the *Discrete Wavelet Transform*, small blocks are transformed with the *Discrete Cosine Transform*, and each bit is hidden by slightly changing the block's largest value from *Singular Value Decomposition*. The change is invisible but survives compression.
+- **HMAC-SHA256:** the message is signed with a secret key (signature shortened to 48 bits), so a watermark without the right key shows as **forged**.
+- **Reed–Solomon error correction:** extra check bytes let the detector repair bits damaged by JPEG compression or resizing.
+- **SHA-256:** produces a unique fingerprint of the uploaded file.
+
+### AI-image detector — Swin Transformer + Fast Fourier Transform
+- **Metadata checks:** rules that look for AI-tool names, Stable Diffusion prompts, C2PA content credentials and the Stable Diffusion invisible watermark.
+- **Swin Transformer** (`Organika/sdxl-detector`): a vision transformer that splits the image into patches and compares them in shifting windows, then outputs the probability that the image is AI-generated.
+- **Fast Fourier Transform (FFT):** converts the image into its frequency spectrum. Regular bright peaks away from the centre suggest the up-sampling grids used by AI image generators.
+- **Weighted score:** model 85% + FFT 15%; if metadata evidence is found, the result is set to 99% AI.
+
 ---
 
 ## Results
