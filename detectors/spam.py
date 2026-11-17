@@ -41,6 +41,7 @@ RED_FLAGS = {
 _COMPILED = {k: [re.compile(p, re.I) for p in v] for k, v in RED_FLAGS.items()}
 
 
+# Load the trained spam model from models/spam_model.joblib once and keep it in memory.
 @lru_cache(maxsize=1)
 def _load():
     if not MODEL_PATH.exists():
@@ -48,6 +49,7 @@ def _load():
     return joblib.load(MODEL_PATH)
 
 
+# Rule-based check: find urgency, authority and manipulation phrases in the message.
 def red_flags(text: str) -> dict:
     """Return {flag_name: [matched phrases]} for every red flag found."""
     found = {}
@@ -58,6 +60,7 @@ def red_flags(text: str) -> dict:
     return found
 
 
+# Explain the verdict: list the words in this message whose TF-IDF value x model weight pushed it most towards spam.
 def _top_words(pipeline, text: str, k: int = 6) -> list:
     """Words/phrases in this message that pushed the score most towards spam."""
     word_vec = pipeline.named_steps["features"].transformer_list[0][1]
@@ -77,6 +80,7 @@ def _top_words(pipeline, text: str, k: int = 6) -> list:
     return out
 
 
+# Main entry point: classify a message as spam/phishing or safe, with its probability, trigger words and red flags.
 def predict(text: str) -> dict:
     text = (text or "").strip()
     if not text:

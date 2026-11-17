@@ -45,6 +45,7 @@ SD1_MESSAGE = b"StableDiffusionV1"
 SDXL_BITS = [int(b) for b in "101100111110110010010000011110111011000110011110"]
 
 
+# Read the secret WATERMARK_KEY from the environment; stop with a clear error if it has not been set.
 def _key() -> bytes:
     key = os.getenv("WATERMARK_KEY", "")
     if not key or key.startswith("replace-with"):
@@ -52,10 +53,12 @@ def _key() -> bytes:
     return key.encode()
 
 
+# Convert a PIL image to the BGR array format that OpenCV and invisible-watermark expect.
 def _to_bgr(img: Image.Image) -> np.ndarray:
     return cv2.cvtColor(np.array(img.convert("RGB")), cv2.COLOR_RGB2BGR)
 
 
+# Work out the fixed working size (longer side 512 px) so the watermark survives later resizing.
 def _work_size(bgr: np.ndarray) -> tuple:
     """(width, height) scaled so the longer side is WORK_SIDE pixels, keeping the aspect ratio."""
     h, w = bgr.shape[:2]
@@ -63,10 +66,12 @@ def _work_size(bgr: np.ndarray) -> tuple:
     return max(1, round(w * s)), max(1, round(h * s))
 
 
+# Resize an image down to the working size before embedding or reading the watermark.
 def _to_work(bgr: np.ndarray) -> np.ndarray:
     return cv2.resize(bgr, _work_size(bgr), interpolation=cv2.INTER_AREA)
 
 
+# Open the input: a file path is read as raw bytes (needed for the SHA-256 fingerprint), a PIL image is used as it is.
 def _open(source):
     """Accept a file path or a PIL image. Returns (PIL image, raw file bytes or None)."""
     if isinstance(source, (str, Path)):
@@ -75,14 +80,17 @@ def _open(source):
     return source, None
 
 
+# Return the SHA-256 fingerprint of the file, a unique ID that changes if even one byte changes.
 def sha256_fingerprint(raw: bytes) -> str:
     return hashlib.sha256(raw).hexdigest()
 
 
+# Sign the watermark message with HMAC-SHA256 and the secret key, keeping the first 48 bits (6 bytes).
 def _sign(body: bytes) -> bytes:
     return hmac.new(_key(), body, hashlib.sha256).digest()[:6]
 
 
+# Clean the owner tag: keep up to 3 letters or digits, in capitals, padded to exactly 3 bytes.
 def _clean_owner(owner: str) -> bytes:
     tag = "".join(ch for ch in (owner or "").upper() if ch.isalnum())[:3]
     if not tag:
@@ -90,6 +98,7 @@ def _clean_owner(owner: str) -> bytes:
     return tag.ljust(3).encode("ascii")
 
 
+# Hide a signed, error-corrected 20-byte watermark in the image using the DWT-DCT-SVD method.
 def embed(source, owner: str, date: dt.date | None = None):
     """Return (watermarked PIL image, info dict). Save the result as PNG to keep it intact."""
     img, _ = _open(source)
@@ -119,6 +128,7 @@ def embed(source, owner: str, date: dt.date | None = None):
     }
 
 
+# Read a Vitality watermark, repair it with Reed-Solomon and check its signature: authentic, forged or none.
 def _check_vitality(bgr: np.ndarray) -> dict:
     small = _to_work(bgr)
     if small.shape[0] * small.shape[1] < MIN_PIXELS:
@@ -139,6 +149,7 @@ def _check_vitality(bgr: np.ndarray) -> dict:
     return {"status": "authentic" if ok else "forged", **info}
 
 
+# Look for the public invisible watermark that Stable Diffusion (1.x/2.x and XL) adds to AI images.
 def _check_stable_diffusion(bgr: np.ndarray) -> str | None:
     """Detect the public watermark Stable Diffusion adds to its outputs (fragile: lost after editing)."""
     bits = np.array(WatermarkDecoder("bits", 48).decode(bgr, "dwtDct"))
@@ -151,6 +162,7 @@ def _check_stable_diffusion(bgr: np.ndarray) -> str | None:
     return None
 
 
+# Main entry point for checking an image: Vitality watermark status, Stable Diffusion watermark and SHA-256 fingerprint.
 def verify(source) -> dict:
     img, raw = _open(source)
     bgr = _to_bgr(img)

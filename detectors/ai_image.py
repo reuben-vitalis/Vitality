@@ -26,6 +26,7 @@ AI_WORDS = ["stable diffusion", "midjourney", "dall-e", "dall·e", "dalle", "fir
 PROMPT_KEYS = ["parameters", "prompt", "workflow", "negative_prompt", "sd-metadata", "dream"]
 
 
+# Open the input: a file path is read as raw bytes (kept for the C2PA check), a PIL image is used as it is.
 def _open(source):
     if isinstance(source, (str, Path)):
         raw = Path(source).read_bytes()
@@ -34,6 +35,8 @@ def _open(source):
 
 
 # ---------- Signal 1: evidence in the file ----------
+# Signal 1: look for direct proof of AI inside the file
+# (AI-tool names in metadata, generation prompts, C2PA credentials, Stable Diffusion watermark).
 def file_evidence(img: Image.Image, raw: bytes | None) -> dict:
     found, camera = [], None
     exif = img.getexif()
@@ -67,21 +70,25 @@ try:                                    # Hugging Face ZeroGPU: borrow a GPU onl
     import spaces
     _gpu = spaces.GPU(duration=30)
 except ImportError:                     # running locally: no-op decorator
+    # Fallback decorator for local runs: returns the function unchanged because there is no ZeroGPU outside Hugging Face.
     def _gpu(fn):
         return fn
 
 
+# Load the pretrained Swin transformer (Organika/sdxl-detector) once and keep it in memory for later calls.
 @lru_cache(maxsize=1)
 def _classifier():
     from transformers import pipeline   # imported lazily: slow to load
     return pipeline("image-classification", model=MODEL_ID)
 
 
+# Run the pretrained model on the image (on Hugging Face this borrows a GPU for up to 30 seconds).
 @_gpu
 def _run_model(img: Image.Image):
     return _classifier()(img.convert("RGB"))
 
 
+# Signal 2: turn the model's labels into one number, the probability (0-1) that the image is AI-generated.
 def model_probability(img: Image.Image) -> float | None:
     """Probability (0-1) that the image is AI-generated, or None if the model is unavailable."""
     try:
@@ -98,6 +105,7 @@ def model_probability(img: Image.Image) -> float | None:
 
 
 # ---------- Signal 3: frequency (FFT) check ----------
+# Signal 3: compute the frequency spectrum (FFT) and score how strongly it shows the grid-like peaks left by AI up-sampling.
 def fft_analysis(img: Image.Image, size: int = 512):
     """Return (artifact score 0-1, spectrum image). Higher score = sharper grid-like peaks
     in the high frequencies, a common trace of AI upsampling layers."""
@@ -126,6 +134,7 @@ def fft_analysis(img: Image.Image, size: int = 512):
 
 
 # ---------- Combined verdict ----------
+# Combine the three signals into the final verdict: evidence wins outright (99% AI), otherwise model 85% + FFT 15%.
 def analyse(source) -> dict:
     img, raw = _open(source)
     ev = file_evidence(img, raw)
