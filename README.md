@@ -36,6 +36,10 @@ Built by **Reuben Vitalis** as the capstone project of the **Wecncode AI in Cybe
 
 Missing camera EXIF is deliberately **not** treated as evidence of AI, because messaging apps strip EXIF from real photos.
 
+#### Reading the frequency spectrum
+The **frequency spectrum** is a picture of the image after a *Fast Fourier Transform* (FFT). Instead of showing colours and shapes, it shows how the image's detail is spread from coarse patterns to fine textures: the **bright centre** holds the broad, smooth areas of the image, and the further a point is from the centre, the finer the detail it represents. In a real photo the brightness fades smoothly from the centre outwards. AI image generators build their pictures by repeatedly *up-sampling* (enlarging) a small image, and this can leave a regular grid in the fine detail, which appears in the spectrum as **bright dots or lines away from the centre**. Vitality measures how sharply such peaks stand out (real photos scored about 2.5–4.5 in testing) and turns this into the FFT score, which counts for 15% of the final result. JPEG compression removes much of this fine detail, so the check works best on PNG or lightly compressed images.
+
+
 ![Vitality](./assets/images/AI_Image.png)
 
 ### Spam & Phishing
